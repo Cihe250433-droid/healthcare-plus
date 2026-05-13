@@ -2,7 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
+
+// Routes
 const authRoutes = require('./routes/authRoutes');
+const patientRoutes = require('./routes/patientRoutes');
 
 dotenv.config();
 
@@ -17,6 +20,9 @@ app.use(express.json());
 
 // Authentication Routes
 app.use('/api/auth', authRoutes);
+
+// Patient Routes
+app.use('/api/patients', patientRoutes);
 
 // Default route
 app.get('/', (req, res) => {
