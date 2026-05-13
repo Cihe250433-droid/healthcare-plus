@@ -6,6 +6,7 @@ const connectDB = require('./config/database');
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 
 dotenv.config();
 
@@ -23,6 +24,9 @@ app.use('/api/auth', authRoutes);
 
 // Patient Routes
 app.use('/api/patients', patientRoutes);
+
+// Appointment Routes
+app.use('/api/appointments', appointmentRoutes);
 
 // Default route
 app.get('/', (req, res) => {
