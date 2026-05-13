@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 dotenv.config();
 
@@ -31,6 +32,9 @@ app.use('/api/appointments', appointmentRoutes);
 
 // Subscription Routes
 app.use('/api/subscriptions', subscriptionRoutes);
+
+// Dashboard Routes
+app.use('/api/dashboard', dashboardRoutes);
 
 // Default route
 app.get('/', (req, res) => {
