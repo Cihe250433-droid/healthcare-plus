@@ -27,5 +27,10 @@ app.get('/api', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
+<<<<<<< HEAD
   console.log(`Server running on http://localhost:${PORT}`);
 });
+=======
+  console.log(` Server running on http://localhost:${PORT}`);
+});
+>>>>>>> 375395eb8be3d61c7b393e70afcf457909616328
