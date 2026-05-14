@@ -1,122 +1,120 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import Dashboard from './pages/Dashboard.jsx';
+import Patients from './pages/Patients.jsx';
+import Appointments from './pages/Appointments.jsx';
+import Billing from './pages/Billing.jsx';
+import Settings from './pages/Settings.jsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+function Layout({ children }) {
+  const navItems = [
+    { name: 'Dashboard', path: '/', icon: '🏠' },
+    { name: 'Patients', path: '/patients', icon: '👥' },
+    { name: 'Appointments', path: '/appointments', icon: '📅' },
+    { name: 'Billing', path: '/billing', icon: '💳' },
+    { name: 'Settings', path: '/settings', icon: '⚙️' }
+  ];
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div style={styles.page}>
+      <aside style={styles.sidebar}>
+        <div style={styles.logoBox}>
+          <div style={styles.logoIcon}>+</div>
+          <div>
+            <h2 style={styles.logoTitle}>HealthCare Plus</h2>
+            <p style={styles.logoSub}>Smart Admin Portal</p>
+          </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+        <nav style={styles.nav}>
+          {navItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              style={({ isActive }) =>
+                isActive ? styles.activeNav : styles.navItem
+              }
+            >
+              {item.icon} {item.name}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <main style={styles.main}>{children}</main>
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/patients" element={<Patients />} />
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/billing" element={<Billing />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
+}
+
+const styles = {
+  page: {
+    display: 'flex',
+    minHeight: '100vh',
+    background: '#eaf3f8',
+    fontFamily: 'Arial, sans-serif'
+  },
+  sidebar: {
+    width: 290,
+    background: 'linear-gradient(180deg, #020617, #164e63)',
+    color: 'white',
+    padding: 26,
+    boxSizing: 'border-box'
+  },
+  logoBox: {
+    display: 'flex',
+    gap: 14,
+    alignItems: 'center',
+    marginBottom: 36
+  },
+  logoIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 18,
+    background: '#06b6d4',
+    display: 'grid',
+    placeItems: 'center',
+    fontSize: 32,
+    fontWeight: 900
+  },
+  logoTitle: { margin: 0, fontSize: 22 },
+  logoSub: { margin: '4px 0 0', color: '#bae6fd', fontSize: 13 },
+  nav: { display: 'grid', gap: 12 },
+  navItem: {
+    textDecoration: 'none',
+    color: '#dbeafe',
+    padding: '14px 16px',
+    borderRadius: 16,
+    fontSize: 15
+  },
+  activeNav: {
+    textDecoration: 'none',
+    color: 'white',
+    background: '#06b6d4',
+    padding: '14px 16px',
+    borderRadius: 16,
+    fontWeight: 800,
+    fontSize: 15
+  },
+  main: {
+    flex: 1,
+    padding: 30
+  }
+};
+
+export default App;
