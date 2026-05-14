@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
+
 import Dashboard from './pages/Dashboard.jsx';
 import Patients from './pages/Patients.jsx';
 import Appointments from './pages/Appointments.jsx';
@@ -13,35 +14,104 @@ function Layout({ children }) {
     { name: 'Appointments', path: '/appointments', icon: '📅' },
     { name: 'Billing', path: '/billing', icon: '💳' },
     { name: 'Settings', path: '/settings', icon: '⚙️' }
-  ];
+  ]; // fixed typo from previous versions
 
   return (
     <div style={styles.page}>
-      <aside style={styles.sidebar}>
-        <div style={styles.logoBox}>
-          <div style={styles.logoIcon}>+</div>
-          <div>
-            <h2 style={styles.logoTitle}>HealthCare Plus</h2>
-            <p style={styles.logoSub}>Smart Admin Portal</p>
-          </div>
-        </div>
+      {/* Premium Sidebar */}
+      <motion.aside
+        style={styles.sidebar}
+        initial={{ x: -40, opacity: 0 }} 
+        animate={{ x: 0, opacity: 1 }} 
+        transition={{ duration: 0.5 }} 
+      >
+        {/* Clickable Animated Logo */}
+        <NavLink to="/" style={styles.logoLink}>
+          <div style={styles.logoBox}>
+            <motion.div
+              style={styles.logoIcon}
+              animate={{
+                y: [0, -6, 0], 
+                boxShadow: [
+                  '0 12px 28px rgba(6,182,212,0.35)',
+                  '0 20px 42px rgba(6,182,212,0.65)',
+                  '0 12px 28px rgba(6,182,212,0.35)'
+                ]
+              }} 
+              transition={{
+                duration: 2.2,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }} 
+              whileHover={{ rotate: 12, scale: 1.12 }} 
+              whileTap={{ scale: 0.95 }} 
+            >
+              <span style={styles.logoPulse}>✚</span>
+            </motion.div>
 
-        <nav style={styles.nav}>
+            <div>
+              <motion.h2
+                style={styles.logoTitle}
+                animate={{ opacity: [0.85, 1, 0.85] }} 
+                transition={{ duration: 2.4, repeat: Infinity }} 
+              >
+                HealthCare Plus
+              </motion.h2>
+              <p style={styles.logoSub}>Smart Care Automation</p>
+            </div>
+          </div>
+        </NavLink>
+
+        {/* Navigation */}
+        <nav style={styles.nav} aria-label="Main navigation">
           {navItems.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
+              end={item.path === '/'} 
               style={({ isActive }) =>
                 isActive ? styles.activeNav : styles.navItem
               }
             >
-              {item.icon} {item.name}
+              <motion.span
+                style={styles.navInner}
+                whileHover={{ x: 6 }} 
+                whileTap={{ scale: 0.97 }} 
+              >
+                <span style={styles.navIcon}>{item.icon}</span>
+                <span>{item.name}</span>
+              </motion.span>
             </NavLink>
           ))}
         </nav>
-      </aside>
 
-      <main style={styles.main}>{children}</main>
+        {/* Sidebar Footer Card */}
+        <motion.div
+          style={styles.sidebarCard}
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.4 }} 
+          whileHover={{ y: -4 }} 
+        >
+          <p style={styles.cardTitle}>System Health</p>
+          <p style={styles.cardText}>
+            API, database and frontend are fully operational.
+          </p>
+          <div style={styles.statusPill}>● Online</div>
+        </motion.div>
+      </motion.aside>
+
+      {/* Main Content */}
+      <main style={styles.main}>
+        <motion.div
+          style={styles.contentShell}
+          initial={{ opacity: 0, y: 18 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.35 }} 
+        >
+          {children}
+        </motion.div>
+      </main>
     </div>
   );
 }
@@ -66,54 +136,163 @@ const styles = {
   page: {
     display: 'flex',
     minHeight: '100vh',
-    background: '#eaf3f8',
-    fontFamily: 'Arial, sans-serif'
+    width: '100%',
+    overflowX: 'hidden'
   },
+
+  /* Sidebar */
   sidebar: {
-    width: 290,
-    background: 'linear-gradient(180deg, #020617, #164e63)',
+    width: 300,
+    minHeight: '100vh',
+    position: 'sticky',
+    top: 0,
+    background:
+      'linear-gradient(180deg, #020617 0%, #0f172a 55%, #164e63 100%)',
     color: 'white',
     padding: 26,
-    boxSizing: 'border-box'
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '20px 0 60px rgba(15,23,42,0.25)',
+    zIndex: 10
   },
+
+  /* Logo */
+  logoLink: {
+    textDecoration: 'none',
+    color: 'inherit',
+    display: 'block'
+  },
+
   logoBox: {
     display: 'flex',
-    gap: 14,
     alignItems: 'center',
-    marginBottom: 36
+    gap: 14,
+    marginBottom: 38,
+    cursor: 'pointer'
   },
+
   logoIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 18,
-    background: '#06b6d4',
+    width: 58,
+    height: 58,
+    borderRadius: 22,
+    background:
+      'conic-gradient(from 180deg, #22d3ee, #0891b2, #14b8a6, #22d3ee)',
     display: 'grid',
     placeItems: 'center',
     fontSize: 32,
+    fontWeight: 900,
+    position: 'relative'
+  },
+
+  logoPulse: {
+    width: 38,
+    height: 38,
+    borderRadius: 14,
+    background: '#020617',
+    color: '#67e8f9',
+    display: 'grid',
+    placeItems: 'center',
+    fontSize: 24,
     fontWeight: 900
   },
-  logoTitle: { margin: 0, fontSize: 22 },
-  logoSub: { margin: '4px 0 0', color: '#bae6fd', fontSize: 13 },
-  nav: { display: 'grid', gap: 12 },
+
+  logoTitle: {
+    margin: 0,
+    fontSize: 22,
+    fontWeight: 900,
+    letterSpacing: '-0.5px'
+  },
+
+  logoSub: {
+    margin: '5px 0 0',
+    color: '#bae6fd',
+    fontSize: 13,
+    fontWeight: 600
+  },
+
+  /* Navigation */
+  nav: {
+    display: 'grid',
+    gap: 12
+  },
+
   navItem: {
     textDecoration: 'none',
     color: '#dbeafe',
-    padding: '14px 16px',
-    borderRadius: 16,
-    fontSize: 15
+    borderRadius: 18,
+    fontSize: 15,
+    fontWeight: 700,
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.06)'
   },
+
   activeNav: {
     textDecoration: 'none',
     color: 'white',
-    background: '#06b6d4',
-    padding: '14px 16px',
-    borderRadius: 16,
-    fontWeight: 800,
-    fontSize: 15
+    borderRadius: 18,
+    fontSize: 15,
+    fontWeight: 900,
+    background:
+      'linear-gradient(135deg, rgba(6,182,212,1), rgba(8,145,178,1))',
+    boxShadow: '0 12px 28px rgba(6,182,212,0.35)',
+    border: '1px solid rgba(255,255,255,0.22)'
   },
+
+  navInner: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '15px 17px'
+  },
+
+  navIcon: {
+    fontSize: 18
+  },
+
+  /* Sidebar Footer Card */
+  sidebarCard: {
+    marginTop: 'auto',
+    background: 'rgba(255,255,255,0.1)',
+    border: '1px solid rgba(255,255,255,0.16)',
+    borderRadius: 26,
+    padding: 20,
+    backdropFilter: 'blur(14px)'
+  },
+
+  cardTitle: {
+    margin: 0,
+    fontWeight: 900,
+    fontSize: 16
+  },
+
+  cardText: {
+    margin: '8px 0 14px',
+    color: '#dbeafe',
+    lineHeight: 1.5,
+    fontSize: 13
+  },
+
+  statusPill: {
+    background: 'rgba(34,197,94,0.16)',
+    color: '#86efac',
+    padding: '8px 12px',
+    borderRadius: 999,
+    fontWeight: 900,
+    fontSize: 13,
+    display: 'inline-block'
+  },
+
+  /* Main Content */
   main: {
     flex: 1,
-    padding: 30
+    minWidth: 0,
+    padding: 28
+  },
+
+  contentShell: {
+    maxWidth: 1440,
+    margin: '0 auto',
+    width: '100%'
   }
 };
 

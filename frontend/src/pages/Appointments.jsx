@@ -183,7 +183,7 @@ function Appointments() {
           <textarea
             style={styles.textarea}
             name="notes"
-            placeholder="Notes"
+            placeholder="Appointment notes"
             value={form.notes}
             onChange={handleChange}
           />
@@ -199,8 +199,12 @@ function Appointments() {
         </motion.form>
 
         <motion.section style={styles.tableCard} whileHover={{ y: -4 }}>
-          <h2 style={styles.cardTitle}>Appointment Schedule</h2>
-          <p style={styles.cardSub}>View and manage appointment records.</p>
+          <div style={styles.tableHeader}>
+            <div>
+              <h2 style={styles.cardTitle}>Appointment Schedule</h2>
+              <p style={styles.cardSub}>View and manage appointment records.</p>
+            </div>
+          </div>
 
           <div style={styles.tableWrap}>
             <table style={styles.table}>
@@ -226,19 +230,30 @@ function Appointments() {
                   appointments.map((appointment) => (
                     <tr key={appointment._id}>
                       <td style={styles.td}>
-                        {appointment.patient?.firstName}{' '}
-                        {appointment.patient?.lastName}
+                        <strong>
+                          {appointment.patient?.firstName || 'Unknown'}{' '}
+                          {appointment.patient?.lastName || 'Patient'}
+                        </strong>
+                        <br />
+                        <span style={styles.muted}>
+                          {appointment.reason || 'No reason added'}
+                        </span>
                       </td>
+
                       <td style={styles.td}>{appointment.doctorName}</td>
+
                       <td style={styles.td}>
                         {appointment.appointmentDate?.slice(0, 10)}
                       </td>
+
                       <td style={styles.td}>{appointment.appointmentTime}</td>
+
                       <td style={styles.td}>
                         <span style={getStatusStyle(appointment.status)}>
                           {appointment.status}
                         </span>
                       </td>
+
                       <td style={styles.td}>
                         <button
                           style={styles.deleteButton}
@@ -268,22 +283,42 @@ function getStatusStyle(status) {
 }
 
 const styles = {
-  page: { color: '#0f172a' },
+  page: {
+    color: '#0f172a',
+    width: '100%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    overflowX: 'hidden'
+  },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24
+    alignItems: 'flex-start',
+    gap: 20,
+    marginBottom: 24,
+    flexWrap: 'wrap'
   },
-  kicker: { margin: 0, color: '#0891b2', fontWeight: 900 },
-  title: { margin: '6px 0', fontSize: 36, fontWeight: 900 },
-  subtitle: { margin: 0, color: '#64748b' },
+  kicker: {
+    margin: 0,
+    color: '#0891b2',
+    fontWeight: 900
+  },
+  title: {
+    margin: '6px 0',
+    fontSize: 36,
+    fontWeight: 900
+  },
+  subtitle: {
+    margin: 0,
+    color: '#64748b'
+  },
   badge: {
     background: '#ecfeff',
     color: '#155e75',
     padding: '12px 18px',
     borderRadius: 999,
-    fontWeight: 900
+    fontWeight: 900,
+    whiteSpace: 'nowrap'
   },
   message: {
     background: '#ecfeff',
@@ -295,35 +330,63 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '0.9fr 1.5fr',
+    gridTemplateColumns: 'minmax(320px, 420px) minmax(0, 1fr)',
     gap: 24,
-    alignItems: 'start'
+    alignItems: 'start',
+    width: '100%',
+    maxWidth: '100%',
+    boxSizing: 'border-box'
   },
   formCard: {
     background: 'white',
     padding: 26,
     borderRadius: 28,
-    boxShadow: '0 10px 30px rgba(15,23,42,0.07)'
+    boxShadow: '0 10px 30px rgba(15,23,42,0.07)',
+    width: '100%',
+    boxSizing: 'border-box'
   },
   tableCard: {
     background: 'white',
     padding: 26,
     borderRadius: 28,
-    boxShadow: '0 10px 30px rgba(15,23,42,0.07)'
+    boxShadow: '0 10px 30px rgba(15,23,42,0.07)',
+    width: '100%',
+    minWidth: 0,
+    boxSizing: 'border-box',
+    overflow: 'hidden'
   },
-  cardTitle: { margin: 0, fontSize: 24, fontWeight: 900 },
-  cardSub: { margin: '8px 0 20px', color: '#64748b' },
+  tableHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: 20,
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    marginBottom: 6
+  },
+  cardTitle: {
+    margin: 0,
+    fontSize: 24,
+    fontWeight: 900
+  },
+  cardSub: {
+    margin: '8px 0 20px',
+    color: '#64748b'
+  },
   formGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: 14
   },
   input: {
+    width: '100%',
     border: '1px solid #cbd5e1',
     borderRadius: 14,
     padding: '13px 14px',
     fontSize: 14,
-    outlineColor: '#0891b2'
+    outlineColor: '#0891b2',
+    boxSizing: 'border-box',
+    background: '#111827',
+    color: 'white'
   },
   inputFull: {
     width: '100%',
@@ -333,7 +396,9 @@ const styles = {
     fontSize: 14,
     marginBottom: 14,
     boxSizing: 'border-box',
-    outlineColor: '#0891b2'
+    outlineColor: '#0891b2',
+    background: '#111827',
+    color: 'white'
   },
   textarea: {
     width: '100%',
@@ -344,7 +409,9 @@ const styles = {
     marginTop: 14,
     minHeight: 100,
     boxSizing: 'border-box',
-    outlineColor: '#0891b2'
+    outlineColor: '#0891b2',
+    background: '#111827',
+    color: 'white'
   },
   primaryButton: {
     width: '100%',
@@ -357,18 +424,34 @@ const styles = {
     cursor: 'pointer',
     marginTop: 14
   },
-  tableWrap: { overflowX: 'auto' },
-  table: { width: '100%', borderCollapse: 'collapse' },
+  tableWrap: {
+    width: '100%',
+    overflowX: 'auto',
+    maxWidth: '100%'
+  },
+  table: {
+    width: '100%',
+    minWidth: 760,
+    borderCollapse: 'collapse',
+    tableLayout: 'fixed'
+  },
   th: {
     textAlign: 'left',
     padding: 14,
     background: '#f8fafc',
     color: '#475569',
-    fontSize: 14
+    fontSize: 14,
+    whiteSpace: 'nowrap'
   },
   td: {
     padding: 14,
-    borderBottom: '1px solid #e2e8f0'
+    borderBottom: '1px solid #e2e8f0',
+    wordBreak: 'break-word',
+    verticalAlign: 'middle'
+  },
+  muted: {
+    color: '#64748b',
+    fontSize: 13
   },
   scheduled: {
     background: '#dcfce7',
@@ -376,7 +459,8 @@ const styles = {
     padding: '6px 12px',
     borderRadius: 999,
     fontWeight: 900,
-    fontSize: 12
+    fontSize: 12,
+    display: 'inline-block'
   },
   completed: {
     background: '#dbeafe',
@@ -384,7 +468,8 @@ const styles = {
     padding: '6px 12px',
     borderRadius: 999,
     fontWeight: 900,
-    fontSize: 12
+    fontSize: 12,
+    display: 'inline-block'
   },
   cancelled: {
     background: '#fee2e2',
@@ -392,7 +477,8 @@ const styles = {
     padding: '6px 12px',
     borderRadius: 999,
     fontWeight: 900,
-    fontSize: 12
+    fontSize: 12,
+    display: 'inline-block'
   },
   noShow: {
     background: '#fef3c7',
@@ -400,7 +486,8 @@ const styles = {
     padding: '6px 12px',
     borderRadius: 999,
     fontWeight: 900,
-    fontSize: 12
+    fontSize: 12,
+    display: 'inline-block'
   },
   deleteButton: {
     border: 0,
