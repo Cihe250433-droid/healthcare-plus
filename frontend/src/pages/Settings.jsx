@@ -5,29 +5,51 @@ import { motion, AnimatePresence } from 'framer-motion';
 function Settings() {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const [profile, setProfile] = useState({
+    name: 'Admin User',
+    email: 'admin@healthcareplus.com',
+    role: 'Clinic Manager',
+    portal: 'HealthCare Plus'
+  });
+
+  const [savedProfile, setSavedProfile] = useState(profile);
 
   const [settings, setSettings] = useState({
     appointmentReminders: true,
     billingAlerts: true,
     monthlyReports: true,
-    compactLayout: false,
     staffNotifications: true,
-    autoBackup: true
+    autoBackup: true,
+    compactLayout: false
   });
 
+  const quickLinks = [
+    { title: 'Dashboard', icon: 'Home', path: '/', description: 'Go back to the main overview.' },
+    { title: 'Patients', icon: 'People', path: '/patients', description: 'Add or update patient records.' },
+    { title: 'Appointments', icon: 'Calendar', path: '/appointments', description: 'Review and create bookings.' },
+    { title: 'Billing', icon: 'Payments', path: '/billing', description: 'Check care plans and payments.' }
+  ];
+
   const toggleSetting = (name) => {
-    setSettings({
-      ...settings,
-      [name]: !settings[name]
-    });
+    setSettings({ ...settings, [name]: !settings[name] });
   };
 
-  const quickLinks = [
-    { title: 'Dashboard', icon: '🏠', path: '/' },
-    { title: 'Patients', icon: '👥', path: '/patients' },
-    { title: 'Appointments', icon: '📅', path: '/appointments' },
-    { title: 'Billing', icon: '💳', path: '/billing' }
-  ];
+  const handleProfileChange = (e) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
+
+  const saveProfile = (e) => {
+    e.preventDefault();
+    setSavedProfile(profile);
+    setMessage('Admin details updated.');
+  };
+
+  const resetProfile = () => {
+    setProfile(savedProfile);
+    setMessage('Profile changes reset.');
+  };
 
   return (
     <motion.div
@@ -37,163 +59,96 @@ function Settings() {
     >
       <header style={styles.header}>
         <div>
-          <p style={styles.kicker}>System Settings</p>
-          <h1 style={styles.title}>Settings & Admin Controls</h1>
+          <p style={styles.kicker}>Settings</p>
+          <h1 style={styles.title}>Manage your workspace</h1>
           <p style={styles.subtitle}>
-            Manage admin profile, automation controls, navigation shortcuts and system actions.
+            Update admin details, reminders, shortcuts and simple system options.
           </p>
         </div>
 
-        <div style={styles.badge}>⚙️ Admin Panel</div>
+        <div style={styles.badge}>Admin area</div>
       </header>
 
+      {message && <div style={styles.message}>{message}</div>}
+
       <section style={styles.grid}>
-        <motion.div style={styles.card} whileHover={{ y: -5 }}>
-          <h2 style={styles.cardTitle}>Admin Profile</h2>
-          <p style={styles.cardSub}>Current system manager account.</p>
+        <motion.form style={styles.card} onSubmit={saveProfile} whileHover={{ y: -5 }}>
+          <h2 style={styles.cardTitle}>Admin details</h2>
+          <p style={styles.cardSub}>Keep the clinic admin information up to date.</p>
 
           <div style={styles.profileBox}>
-            <motion.div
-              style={styles.avatar}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 2.4, repeat: Infinity }}
-            >
-              AU
-            </motion.div>
+            <div style={styles.avatar}>
+              {profile.name.split(' ').map((word) => word[0]).join('').slice(0, 2).toUpperCase()}
+            </div>
 
             <div>
-              <h3 style={styles.profileName}>Admin User</h3>
-              <p style={styles.profileRole}>System Manager</p>
+              <h3 style={styles.profileName}>{savedProfile.name}</h3>
+              <p style={styles.profileRole}>{savedProfile.role}</p>
             </div>
           </div>
 
-          <input style={styles.input} value="admin@healthcareplus.com" readOnly />
-          <input style={styles.input} value="HealthCare Plus Admin Portal" readOnly />
+          <label style={styles.label}>
+            Name
+            <input style={styles.input} name="name" value={profile.name} onChange={handleProfileChange} />
+          </label>
+
+          <label style={styles.label}>
+            Email
+            <input style={styles.input} name="email" value={profile.email} onChange={handleProfileChange} />
+          </label>
+
+          <label style={styles.label}>
+            Role
+            <input style={styles.input} name="role" value={profile.role} onChange={handleProfileChange} />
+          </label>
+
+          <label style={styles.label}>
+            Clinic name
+            <input style={styles.input} name="portal" value={profile.portal} onChange={handleProfileChange} />
+          </label>
 
           <div style={styles.buttonGrid}>
-            <button type="button" style={styles.adminButton}>
-              Edit Profile
-            </button>
-            <button type="button" style={styles.adminButtonDark}>
-              Change Password
-            </button>
+            <button type="submit" style={styles.adminButtonDark}>Save details</button>
+            <button type="button" style={styles.adminButton} onClick={resetProfile}>Reset</button>
           </div>
-        </motion.div>
+        </motion.form>
 
         <motion.div style={styles.card} whileHover={{ y: -5 }}>
-          <h2 style={styles.cardTitle}>Automation Controls</h2>
-          <p style={styles.cardSub}>Control smart background actions.</p>
+          <h2 style={styles.cardTitle}>Reminders and updates</h2>
+          <p style={styles.cardSub}>Choose which helpful updates should stay on.</p>
 
-          <SettingToggle
-            title="Appointment Reminders"
-            description="Automatically remind patients before appointments."
-            checked={settings.appointmentReminders}
-            onClick={() => toggleSetting('appointmentReminders')}
-          />
-
-          <SettingToggle
-            title="Billing Alerts"
-            description="Notify staff when subscriptions are pending or overdue."
-            checked={settings.billingAlerts}
-            onClick={() => toggleSetting('billingAlerts')}
-          />
-
-          <SettingToggle
-            title="Monthly Reports"
-            description="Generate monthly patient and billing reports."
-            checked={settings.monthlyReports}
-            onClick={() => toggleSetting('monthlyReports')}
-          />
-
-          <SettingToggle
-            title="Staff Notifications"
-            description="Send important system updates to staff."
-            checked={settings.staffNotifications}
-            onClick={() => toggleSetting('staffNotifications')}
-          />
-
-          <SettingToggle
-            title="Auto Backup"
-            description="Enable automatic backup preparation for records."
-            checked={settings.autoBackup}
-            onClick={() => toggleSetting('autoBackup')}
-          />
-
-          <SettingToggle
-            title="Compact Layout"
-            description="Reduce spacing for dashboard cards and tables."
-            checked={settings.compactLayout}
-            onClick={() => toggleSetting('compactLayout')}
-          />
+          <SettingToggle title="Appointment reminders" description="Remind staff before scheduled visits." checked={settings.appointmentReminders} onClick={() => toggleSetting('appointmentReminders')} />
+          <SettingToggle title="Billing alerts" description="Highlight payments that need attention." checked={settings.billingAlerts} onClick={() => toggleSetting('billingAlerts')} />
+          <SettingToggle title="Monthly reports" description="Prepare a simple monthly activity summary." checked={settings.monthlyReports} onClick={() => toggleSetting('monthlyReports')} />
+          <SettingToggle title="Staff notifications" description="Show important updates for the clinic team." checked={settings.staffNotifications} onClick={() => toggleSetting('staffNotifications')} />
+          <SettingToggle title="Record backup reminder" description="Remind admin to keep data safely backed up." checked={settings.autoBackup} onClick={() => toggleSetting('autoBackup')} />
+          <SettingToggle title="Compact view" description="Use slightly tighter spacing on larger tables." checked={settings.compactLayout} onClick={() => toggleSetting('compactLayout')} />
         </motion.div>
       </section>
 
       <section style={styles.bottomGrid}>
         <motion.div style={styles.card} whileHover={{ y: -5 }}>
-          <h2 style={styles.cardTitle}>Navigation Shortcuts</h2>
-          <p style={styles.cardSub}>Quick access to main system pages.</p>
+          <h2 style={styles.cardTitle}>Shortcuts</h2>
+          <p style={styles.cardSub}>Jump to the pages used most often.</p>
 
           <div style={styles.quickGrid}>
             {quickLinks.map((link) => (
-              <motion.button
-                key={link.title}
-                type="button"
-                style={styles.quickButton}
-                whileHover={{ y: -5, scale: 1.03 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => navigate(link.path)}
-              >
-                <span style={styles.quickIcon}>{link.icon}</span>
-                <span>{link.title}</span>
-              </motion.button>
+              <button key={link.title} type="button" style={styles.quickButton} onClick={() => navigate(link.path)}>
+                <strong>{link.title}</strong>
+                <span>{link.description}</span>
+              </button>
             ))}
           </div>
         </motion.div>
 
-        <motion.div style={styles.systemCard} whileHover={{ y: -5 }}>
-          <h2 style={styles.cardTitle}>System Status</h2>
-          <p style={styles.cardSub}>Current application environment.</p>
-
-          <StatusRow label="Backend API" value="Connected" />
-          <StatusRow label="Database" value="MongoDB Atlas" />
-          <StatusRow label="Frontend" value="React + Vite" />
-          <StatusRow label="Animations" value="Framer Motion" />
-
-          <div style={styles.buttonGrid}>
-            <button type="button" style={styles.adminButton}>
-              Export Logs
-            </button>
-            <button type="button" style={styles.adminButtonDark}>
-              Backup Data
-            </button>
-          </div>
-        </motion.div>
-      </section>
-
-      <section style={styles.logoutGrid}>
-        <motion.div style={styles.securityCard} whileHover={{ y: -5 }}>
-          <h2 style={styles.darkTitle}>Security Overview</h2>
-          <p style={styles.darkSub}>
-            JWT authentication and role-based middleware are prepared for protected access.
-          </p>
-
-          <div style={styles.securityItem}>✅ JWT Authentication Ready</div>
-          <div style={styles.securityItem}>✅ Password Hashing Prepared</div>
-          <div style={styles.securityItem}>✅ Protected API Design</div>
-        </motion.div>
-
         <motion.div style={styles.logoutCard} whileHover={{ y: -5 }}>
-          <h2 style={styles.logoutTitle}>Logout Section</h2>
+          <h2 style={styles.logoutTitle}>Logout</h2>
           <p style={styles.logoutText}>
-            End the current admin session and return to a safe system state.
+            Finish the current admin session and return to the main dashboard.
           </p>
 
-          <button
-            type="button"
-            style={styles.logoutButton}
-            onClick={() => setShowLogoutModal(true)}
-          >
-            Logout Admin
+          <button type="button" style={styles.logoutButton} onClick={() => setShowLogoutModal(true)}>
+            Logout
           </button>
         </motion.div>
       </section>
@@ -212,34 +167,16 @@ function Settings() {
               initial={{ scale: 0.85, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.85, opacity: 0, y: 30 }}
-              transition={{ type: 'spring', stiffness: 180, damping: 18 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={styles.modalIcon}>🚪</div>
-              <h2 style={styles.modalTitle}>Confirm Logout</h2>
+              <h2 style={styles.modalTitle}>Logout?</h2>
               <p style={styles.modalText}>
-                This demo does not currently use a full login session, but this confirms the logout workflow for assessment demonstration.
+                This will close the admin workflow and take you back to the dashboard.
               </p>
 
               <div style={styles.modalActions}>
-                <button
-                  type="button"
-                  style={styles.cancelButton}
-                  onClick={() => setShowLogoutModal(false)}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  style={styles.confirmLogoutButton}
-                  onClick={() => {
-                    setShowLogoutModal(false);
-                    navigate('/');
-                  }}
-                >
-                  Confirm Logout
-                </button>
+                <button type="button" style={styles.cancelButton} onClick={() => setShowLogoutModal(false)}>Cancel</button>
+                <button type="button" style={styles.confirmLogoutButton} onClick={() => { setShowLogoutModal(false); navigate('/'); }}>Logout</button>
               </div>
             </motion.div>
           </motion.div>
@@ -257,12 +194,7 @@ function SettingToggle({ title, description, checked, onClick }) {
         <p style={styles.toggleDesc}>{description}</p>
       </div>
 
-      <button
-        type="button"
-        onClick={onClick}
-        style={checked ? styles.toggleOn : styles.toggleOff}
-        aria-label={`Toggle ${title}`}
-      >
+      <button type="button" onClick={onClick} style={checked ? styles.toggleOn : styles.toggleOff}>
         <motion.span
           style={styles.toggleCircle}
           animate={{ x: checked ? 26 : 0 }}
@@ -273,19 +205,8 @@ function SettingToggle({ title, description, checked, onClick }) {
   );
 }
 
-function StatusRow({ label, value }) {
-  return (
-    <div style={styles.statusRow}>
-      <span>{label}</span>
-      <strong style={styles.online}>{value}</strong>
-    </div>
-  );
-}
-
 const styles = {
-  page: {
-    color: '#0f172a'
-  },
+  page: { color: '#0f172a' },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -296,7 +217,7 @@ const styles = {
   },
   kicker: {
     margin: 0,
-    color: '#0891b2',
+    color: '#0e7490',
     fontWeight: 900,
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
@@ -321,6 +242,14 @@ const styles = {
     borderRadius: 999,
     fontWeight: 900
   },
+  message: {
+    background: '#ecfeff',
+    color: '#155e75',
+    padding: 14,
+    borderRadius: 16,
+    marginBottom: 20,
+    fontWeight: 800
+  },
   grid: {
     display: 'grid',
     gridTemplateColumns: '0.9fr 1.3fr',
@@ -328,12 +257,6 @@ const styles = {
     marginBottom: 24
   },
   bottomGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: 24,
-    marginBottom: 24
-  },
-  logoutGrid: {
     display: 'grid',
     gridTemplateColumns: '1.2fr 0.8fr',
     gap: 24
@@ -344,22 +267,8 @@ const styles = {
     borderRadius: 28,
     boxShadow: '0 10px 30px rgba(15,23,42,0.07)'
   },
-  systemCard: {
-    background: 'white',
-    padding: 26,
-    borderRadius: 28,
-    boxShadow: '0 10px 30px rgba(15,23,42,0.07)'
-  },
-  cardTitle: {
-    margin: 0,
-    fontSize: 24,
-    fontWeight: 900
-  },
-  cardSub: {
-    margin: '8px 0 20px',
-    color: '#64748b',
-    lineHeight: 1.6
-  },
+  cardTitle: { margin: 0, fontSize: 24, fontWeight: 900 },
+  cardSub: { margin: '8px 0 20px', color: '#64748b', lineHeight: 1.6 },
   profileBox: {
     display: 'flex',
     alignItems: 'center',
@@ -373,39 +282,34 @@ const styles = {
     width: 60,
     height: 60,
     borderRadius: '50%',
-    background: 'linear-gradient(135deg, #0891b2, #0f172a)',
+    background: '#0e7490',
     color: 'white',
     display: 'grid',
     placeItems: 'center',
     fontWeight: 900,
     fontSize: 18
   },
-  profileName: {
-    margin: 0,
-    fontSize: 20,
-    fontWeight: 900
-  },
-  profileRole: {
-    margin: '4px 0 0',
-    color: '#64748b'
+  profileName: { margin: 0, fontSize: 20, fontWeight: 900 },
+  profileRole: { margin: '4px 0 0', color: '#64748b' },
+  label: {
+    display: 'grid',
+    gap: 7,
+    marginTop: 12,
+    color: '#334155',
+    fontWeight: 800,
+    fontSize: 13
   },
   input: {
     width: '100%',
     border: '1px solid #cbd5e1',
     borderRadius: 14,
     padding: '13px 14px',
-    marginTop: 12,
     boxSizing: 'border-box',
     fontSize: 14,
-    color: '#475569',
+    color: '#0f172a',
     background: '#f8fafc'
   },
-  buttonGrid: {
-    display: 'flex',
-    gap: 12,
-    marginTop: 18,
-    flexWrap: 'wrap'
-  },
+  buttonGrid: { display: 'flex', gap: 12, marginTop: 18, flexWrap: 'wrap' },
   adminButton: {
     border: 0,
     background: '#ecfeff',
@@ -417,7 +321,7 @@ const styles = {
   },
   adminButtonDark: {
     border: 0,
-    background: 'linear-gradient(135deg, #0891b2, #0f172a)',
+    background: '#0e7490',
     color: 'white',
     padding: '12px 16px',
     borderRadius: 14,
@@ -432,22 +336,14 @@ const styles = {
     padding: '16px 0',
     borderBottom: '1px solid #e2e8f0'
   },
-  toggleTitle: {
-    margin: 0,
-    fontWeight: 900
-  },
-  toggleDesc: {
-    margin: '5px 0 0',
-    color: '#64748b',
-    fontSize: 14,
-    lineHeight: 1.5
-  },
+  toggleTitle: { margin: 0, fontWeight: 900 },
+  toggleDesc: { margin: '5px 0 0', color: '#64748b', fontSize: 14, lineHeight: 1.5 },
   toggleOn: {
     width: 62,
     height: 34,
     borderRadius: 999,
     border: 0,
-    background: '#0891b2',
+    background: '#0e7490',
     padding: 5,
     cursor: 'pointer'
   },
@@ -469,75 +365,29 @@ const styles = {
   },
   quickGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
     gap: 14
   },
   quickButton: {
     border: 0,
-    background: 'linear-gradient(135deg, #ffffff, #ecfeff)',
-    borderRadius: 20,
+    background: '#f8fafc',
+    borderRadius: 18,
     padding: 18,
     cursor: 'pointer',
-    fontWeight: 900,
     color: '#0f172a',
-    boxShadow: '0 8px 24px rgba(15,23,42,0.06)',
     display: 'grid',
     gap: 8,
-    justifyItems: 'center'
-  },
-  quickIcon: {
-    fontSize: 28
-  },
-  statusRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '14px 0',
-    borderBottom: '1px solid #e2e8f0'
-  },
-  online: {
-    color: '#0891b2'
-  },
-  securityCard: {
-    background: '#020617',
-    color: 'white',
-    padding: 26,
-    borderRadius: 28,
-    boxShadow: '0 10px 30px rgba(15,23,42,0.15)'
-  },
-  darkTitle: {
-    margin: 0,
-    fontSize: 24,
-    fontWeight: 900
-  },
-  darkSub: {
-    color: '#94a3b8',
-    lineHeight: 1.7
-  },
-  securityItem: {
-    background: '#0f172a',
-    padding: 14,
-    borderRadius: 16,
-    marginTop: 12,
-    color: '#dbeafe',
-    fontWeight: 800
+    textAlign: 'left'
   },
   logoutCard: {
-    background: 'linear-gradient(135deg, #fff1f2, #ffffff)',
+    background: 'white',
     padding: 26,
     borderRadius: 28,
     boxShadow: '0 10px 30px rgba(15,23,42,0.07)',
-    border: '1px solid #fecdd3'
+    border: '1px solid #fee2e2'
   },
-  logoutTitle: {
-    margin: 0,
-    fontSize: 24,
-    fontWeight: 900,
-    color: '#991b1b'
-  },
-  logoutText: {
-    color: '#7f1d1d',
-    lineHeight: 1.7
-  },
+  logoutTitle: { margin: 0, fontSize: 24, fontWeight: 900, color: '#991b1b' },
+  logoutText: { color: '#7f1d1d', lineHeight: 1.7 },
   logoutButton: {
     border: 0,
     background: '#dc2626',
@@ -560,25 +410,14 @@ const styles = {
   modalCard: {
     background: 'white',
     width: '100%',
-    maxWidth: 460,
+    maxWidth: 440,
     borderRadius: 30,
     padding: 30,
     boxShadow: '0 30px 90px rgba(2,6,23,0.35)',
     textAlign: 'center'
   },
-  modalIcon: {
-    fontSize: 46,
-    marginBottom: 12
-  },
-  modalTitle: {
-    margin: 0,
-    fontSize: 28,
-    fontWeight: 900
-  },
-  modalText: {
-    color: '#64748b',
-    lineHeight: 1.7
-  },
+  modalTitle: { margin: 0, fontSize: 28, fontWeight: 900 },
+  modalText: { color: '#64748b', lineHeight: 1.7 },
   modalActions: {
     display: 'flex',
     justifyContent: 'center',
